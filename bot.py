@@ -9,7 +9,7 @@ from aiogram.types import (
     CallbackQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    BufferedInputFile
+    FSInputFile
 )
 
 from config import BOT_TOKEN
@@ -29,16 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = BASE_DIR / "images"
 
 
-def get_photo(filename: str) -> BufferedInputFile:
-    path = IMAGES_DIR / filename
+def get_photo(filename: str):
+    photo_path = IMAGES_DIR / filename
 
-    if not path.exists():
-        raise FileNotFoundError(f"Не найден файл картинки: {path}")
+    if not photo_path.exists():
+        raise FileNotFoundError(f"Файл не найден: {photo_path}")
 
-    return BufferedInputFile(
-        path.read_bytes(),
-        filename=filename
-    )
+    return FSInputFile(str(photo_path))
 
 
 start_keyboard = InlineKeyboardMarkup(
@@ -114,7 +111,9 @@ https://eskoblik.ru/soglasyerassylka_skoblik
 @dp.callback_query(lambda c: c.data == "start_analysis")
 async def start_analysis(callback: CallbackQuery):
     await callback.answer()
-    await callback.message.answer("✨ Введи свою дату рождения в формате ДД.ММ.ГГГГ")
+    await callback.message.answer(
+        "✨ Введи свою дату рождения в формате ДД.ММ.ГГГГ"
+    )
 
 
 @dp.message()
@@ -130,7 +129,9 @@ async def get_date(message: Message):
         future_result = FUTURE_TEXTS[life_number]
 
     except Exception:
-        await message.answer("❌ Пожалуйста, введи дату в формате ДД.ММ.ГГГГ")
+        await message.answer(
+            "❌ Пожалуйста, введи дату в формате ДД.ММ.ГГГГ"
+        )
         return
 
     user_data[message.from_user.id] = {
