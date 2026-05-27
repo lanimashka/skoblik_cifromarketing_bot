@@ -9,7 +9,7 @@ from aiogram.types import (
     CallbackQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    FSInputFile
+    BufferedInputFile
 )
 
 from config import BOT_TOKEN
@@ -28,6 +28,8 @@ dp = Dispatcher()
 BASE_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = BASE_DIR / "images"
 
+user_data = {}
+
 
 def get_photo(filename: str):
     photo_path = IMAGES_DIR / filename
@@ -35,7 +37,13 @@ def get_photo(filename: str):
     if not photo_path.exists():
         raise FileNotFoundError(f"Файл не найден: {photo_path}")
 
-    return FSInputFile(str(photo_path))
+    with open(photo_path, "rb") as image:
+        image_bytes = image.read()
+
+    return BufferedInputFile(
+        file=image_bytes,
+        filename=filename
+    )
 
 
 start_keyboard = InlineKeyboardMarkup(
@@ -74,8 +82,6 @@ channel_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-user_data = {}
-
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -105,12 +111,16 @@ https://eskoblik.ru/soglasyerassylka_skoblik
 Нажимая кнопку ниже, ты подтверждаешь согласие с условиями ✨
 """
 
-    await message.answer(text, reply_markup=start_keyboard)
+    await message.answer(
+        text,
+        reply_markup=start_keyboard
+    )
 
 
 @dp.callback_query(lambda c: c.data == "start_analysis")
 async def start_analysis(callback: CallbackQuery):
     await callback.answer()
+
     await callback.message.answer(
         "✨ Введи свою дату рождения в формате ДД.ММ.ГГГГ"
     )
