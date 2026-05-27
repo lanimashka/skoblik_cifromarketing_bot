@@ -178,7 +178,7 @@ async def get_date(message: Message):
 
     await asyncio.sleep(1)
 
-    energy_photo = FSInputFile("./images/КТО ТЫ ПО ЭНЕРГИИ.png")
+    energy_photo = FSInputFile("./images/energy.png")
 
     energy_text = f"""
 🌟 Кто ты по энергии
@@ -200,7 +200,7 @@ async def talents_section(callback: CallbackQuery):
 
     await callback.answer()
 
-    talents_photo = FSInputFile("./images/Таланты.png")
+    talents_photo = FSInputFile("./images/talents.png")
 
     talents_text = """
 🌟 Таланты
@@ -239,7 +239,7 @@ async def money_section(callback: CallbackQuery):
 
     await callback.answer()
 
-    money_photo = FSInputFile("./images/Деньги и реализация.png")
+    money_photo = FSInputFile("./images/money.png")
 
     money_text = f"""
 💸 Деньги и реализация
@@ -261,7 +261,7 @@ async def marketing_section(callback: CallbackQuery):
 
     await callback.answer()
 
-    marketing_photo = FSInputFile("./images/Маркетинг по цифрам.png")
+    marketing_photo = FSInputFile("./images/marketing.png")
 
     marketing_text = f"""
 📈 Маркетинг по твоим цифрам
@@ -283,7 +283,7 @@ async def future_section(callback: CallbackQuery):
 
     await callback.answer()
 
-    future_photo = FSInputFile("./images/Прогноз на 2026.png")
+    future_photo = FSInputFile("./images/future.png")
 
     future_text = f"""
 🔮 Прогноз на 2026 год
@@ -305,7 +305,7 @@ async def channel_section(callback: CallbackQuery):
 
     await callback.answer()
 
-    thanks_photo = FSInputFile("./images/Благодарочка.png")
+    thanks_photo = FSInputFile("./images/thanks.png")
 
     channel_text = """
 💜 Если тебе откликнулся этот разбор — буду рада видеть тебя в Telegram-канале Екатерины Скоблик 🚀
