@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pathlib import Path
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
@@ -8,7 +9,7 @@ from aiogram.types import (
     CallbackQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    FSInputFile
+    BufferedInputFile
 )
 
 from config import BOT_TOKEN
@@ -24,69 +25,55 @@ from calculations.numerology import (
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+BASE_DIR = Path(__file__).resolve().parent
+IMAGES_DIR = BASE_DIR / "images"
+
+
+def get_photo(filename: str) -> BufferedInputFile:
+    path = IMAGES_DIR / filename
+
+    if not path.exists():
+        raise FileNotFoundError(f"Не найден файл картинки: {path}")
+
+    return BufferedInputFile(
+        path.read_bytes(),
+        filename=filename
+    )
+
+
 start_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="✨ Начать анализ",
-                callback_data="start_analysis"
-            )
-        ]
+        [InlineKeyboardButton(text="✨ Начать анализ", callback_data="start_analysis")]
     ]
 )
 
 talents_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="🌟 Таланты",
-                callback_data="talents_section"
-            )
-        ]
+        [InlineKeyboardButton(text="🌟 Таланты", callback_data="talents_section")]
     ]
 )
 
 money_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="💸 Деньги и реализация",
-                callback_data="money_section"
-            )
-        ]
+        [InlineKeyboardButton(text="💸 Деньги и реализация", callback_data="money_section")]
     ]
 )
 
 marketing_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="📈 Маркетинг по цифрам",
-                callback_data="marketing_section"
-            )
-        ]
+        [InlineKeyboardButton(text="📈 Маркетинг по цифрам", callback_data="marketing_section")]
     ]
 )
 
 future_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="🔮 Прогноз на 2026",
-                callback_data="future_section"
-            )
-        ]
+        [InlineKeyboardButton(text="🔮 Прогноз на 2026", callback_data="future_section")]
     ]
 )
 
 channel_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="✨ Что еще?",
-                callback_data="channel_section"
-            )
-        ]
+        [InlineKeyboardButton(text="✨ Что еще?", callback_data="channel_section")]
     ]
 )
 
@@ -95,7 +82,6 @@ user_data = {}
 
 @dp.message(CommandStart())
 async def start(message: Message):
-
     text = """
 Добро пожаловать в пространство цифр, маркетинга, масштабирования и сильной энергии.
 
@@ -122,25 +108,17 @@ https://eskoblik.ru/soglasyerassylka_skoblik
 Нажимая кнопку ниже, ты подтверждаешь согласие с условиями ✨
 """
 
-    await message.answer(
-        text,
-        reply_markup=start_keyboard
-    )
+    await message.answer(text, reply_markup=start_keyboard)
 
 
 @dp.callback_query(lambda c: c.data == "start_analysis")
 async def start_analysis(callback: CallbackQuery):
-
     await callback.answer()
-
-    await callback.message.answer(
-        "✨ Введи свою дату рождения в формате ДД.MM.ГГГГ"
-    )
+    await callback.message.answer("✨ Введи свою дату рождения в формате ДД.ММ.ГГГГ")
 
 
 @dp.message()
 async def get_date(message: Message):
-
     birth_date = message.text
 
     try:
@@ -151,10 +129,8 @@ async def get_date(message: Message):
         marketing_result = MARKETING_TEXTS[life_number]
         future_result = FUTURE_TEXTS[life_number]
 
-    except:
-        await message.answer(
-            "❌ Пожалуйста, введи дату в формате ДД.MM.ГГГГ"
-        )
+    except Exception:
+        await message.answer("❌ Пожалуйста, введи дату в формате ДД.ММ.ГГГГ")
         return
 
     user_data[message.from_user.id] = {
@@ -176,18 +152,16 @@ async def get_date(message: Message):
 
     await asyncio.sleep(1)
 
-    energy_photo = FSInputFile("./images/energy.png")
-
     energy_text = f"""
 🌟 Кто ты по энергии
 
-{user_data[message.from_user.id]["energy"]}
+{energy_result}
 
 ✨ Это только начало твоего разбора
 """
 
     await message.answer_photo(
-        photo=energy_photo,
+        photo=get_photo("energy.png"),
         caption=energy_text,
         reply_markup=talents_keyboard
     )
@@ -195,10 +169,7 @@ async def get_date(message: Message):
 
 @dp.callback_query(lambda c: c.data == "talents_section")
 async def talents_section(callback: CallbackQuery):
-
     await callback.answer()
-
-    talents_photo = FSInputFile("./images/talents.png")
 
     talents_text = """
 🌟 Таланты
@@ -226,7 +197,7 @@ async def talents_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=talents_photo,
+        photo=get_photo("talents.png"),
         caption=talents_text,
         reply_markup=money_keyboard
     )
@@ -234,10 +205,7 @@ async def talents_section(callback: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "money_section")
 async def money_section(callback: CallbackQuery):
-
     await callback.answer()
-
-    money_photo = FSInputFile("./images/money.png")
 
     money_text = f"""
 💸 Деньги и реализация
@@ -248,7 +216,7 @@ async def money_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=money_photo,
+        photo=get_photo("money.png"),
         caption=money_text,
         reply_markup=marketing_keyboard
     )
@@ -256,10 +224,7 @@ async def money_section(callback: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "marketing_section")
 async def marketing_section(callback: CallbackQuery):
-
     await callback.answer()
-
-    marketing_photo = FSInputFile("./images/marketing.png")
 
     marketing_text = f"""
 📈 Маркетинг по твоим цифрам
@@ -270,7 +235,7 @@ async def marketing_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=marketing_photo,
+        photo=get_photo("marketing.png"),
         caption=marketing_text,
         reply_markup=future_keyboard
     )
@@ -278,10 +243,7 @@ async def marketing_section(callback: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "future_section")
 async def future_section(callback: CallbackQuery):
-
     await callback.answer()
-
-    future_photo = FSInputFile("./images/future.png")
 
     future_text = f"""
 🔮 Прогноз на 2026 год
@@ -292,7 +254,7 @@ async def future_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=future_photo,
+        photo=get_photo("future.png"),
         caption=future_text,
         reply_markup=channel_keyboard
     )
@@ -300,25 +262,38 @@ async def future_section(callback: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "channel_section")
 async def channel_section(callback: CallbackQuery):
-
     await callback.answer()
-
-    thanks_photo = FSInputFile("./images/thanks.png")
 
     channel_text = """
 💜 Если тебе откликнулся этот разбор — буду рада видеть тебя в Telegram-канале Екатерины Скоблик 🚀
 
 https://t.me/skoblikmarketing
+
+Там тебя ждут:
+— маркетинг
+— нейросети
+— продвижение
+— продажи
+— Reels
+— сильные разборы
+— полезные инструменты
+— рабочие схемы и стратегии
+
+Это пространство для тех, кто хочет расти, масштабироваться и идти в сильное проявление ✨
+
+И да… это будет лучшая благодарность за разбор 💜
 """
 
     await callback.message.answer_photo(
-        photo=thanks_photo,
+        photo=get_photo("thanks.png"),
         caption=channel_text
     )
 
     await callback.message.answer(
         """
-✨ Буду рада твоим отметкам в сторис и социальных сетях 🚀💜
+✨ Буду рада твоим отметкам в сторис и социальных сетях.
+
+Отмечай меня и мои блоги — мне будет очень приятно видеть твои впечатления от разбора и твои результаты 🚀💜
 """
     )
 
