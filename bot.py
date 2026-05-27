@@ -161,7 +161,7 @@ async def get_date(message: Message):
 """
 
     await message.answer_photo(
-        photo=get_photo("energy.png"),
+        photo=get_photo("energy.jpg"),
         caption=energy_text,
         reply_markup=talents_keyboard
     )
@@ -197,7 +197,7 @@ async def talents_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=get_photo("talents.png"),
+        photo=get_photo("talents.jpg"),
         caption=talents_text,
         reply_markup=money_keyboard
     )
@@ -216,7 +216,7 @@ async def money_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=get_photo("money.png"),
+        photo=get_photo("money.jpg"),
         caption=money_text,
         reply_markup=marketing_keyboard
     )
@@ -235,7 +235,7 @@ async def marketing_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=get_photo("marketing.png"),
+        photo=get_photo("marketing.jpg"),
         caption=marketing_text,
         reply_markup=future_keyboard
     )
@@ -254,7 +254,7 @@ async def future_section(callback: CallbackQuery):
 """
 
     await callback.message.answer_photo(
-        photo=get_photo("future.png"),
+        photo=get_photo("future.jpg"),
         caption=future_text,
         reply_markup=channel_keyboard
     )
@@ -285,7 +285,7 @@ https://t.me/skoblikmarketing
 """
 
     await callback.message.answer_photo(
-        photo=get_photo("thanks.png"),
+        photo=get_photo("thanks.jpg"),
         caption=channel_text
     )
 
